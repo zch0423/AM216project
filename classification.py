@@ -19,9 +19,9 @@ from concurrent.futures import ProcessPoolExecutor  # 多进程
 #%%
 data = pd.read_csv("classified.csv")
 data = shuffle(data)  # 打乱
-X = data.iloc[:, 1].to_numpy()  # consumption
+X = data.iloc[:, 2:].to_numpy()  # consumption
 # discount,user_level,plus,gender,age,marital_status,education,city_level,purchase_power
-y = data.iloc[:, 2:].to_numpy()
+y = data.iloc[:, 1].to_numpy()
 
 # hyperparameters
 num = 50  # number of ensemble models
@@ -108,5 +108,15 @@ def training(X, y, max_workers=6):
     return avg_accuracy, std_accuracy
 
 if __name__ == "__main__":
-    avg_accuracy, std_accuracy = training(X, y, max_workers=6)
-    print(avg_accuracy, std_accuracy)
+    X = np.zeros((6, 5))
+    X[0] = [np.nan, 1, 2, 3, 4]
+    X[1] = [1, 2, 3, 4, np.nan]
+    X[2] = [np.nan, 5, 4, 3, 2]
+    X[3] = [np.nan, 5, 4, 4, 1]
+    X[4] = [4, np.nan, 4, 4, 1]
+    X[5] = [np.nan, 2, 3, 4, 5]
+    y = np.array([1, 1, 0,0,0,1 ])
+    print(X)
+    print(baggingTree(X, y, X, y))
+    # avg_accuracy, std_accuracy = training(X, y, max_workers=8)
+    # print(avg_accuracy, std_accuracy)

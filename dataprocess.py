@@ -156,9 +156,9 @@ def process_data(n_cons=10, n_dis=5, path="userorder.csv"):
     data["discount"] = discount
 
     # 将其余转化为数值
-    gender_map = {"U": 0, "F": 1, "M": -1}
-    marital_map = {"U": 0, "M": 1, "S": -1}
-    age_map = {"U": 0,
+    gender_map = {"U": -1, "F": 1, "M": 0}
+    marital_map = {"U": -1, "M": 1, "S": 0}
+    age_map = {"U": -1,
                "<=15": 1,
                "16-25": 2,
                "26-35": 3,
@@ -171,12 +171,16 @@ def process_data(n_cons=10, n_dis=5, path="userorder.csv"):
     data["age"] = data["age"].map(age_map)
     print("Labelling marital status")
     data["marital_status"] = data["marital_status"].map(marital_map)
-    data.to_csv("classified.csv", index=0)
+    data.to_csv("classified%d.csv"%n_cons, index=0)
     return data
 
+def labelNull(data):
+    # 将缺失值处理为null
+    pass
+    
 #%%
 if __name__ == "__main__":
     # clicks, order, sku, user = read_tables()
     print("Read")  # test
     # multiUserOrder(user, order, process_num=6, outfile="userorder.csv")
-    # process_data()  # 预处理
+    process_data(n_cons=5)  # 预处理

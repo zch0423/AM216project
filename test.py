@@ -1,61 +1,40 @@
 #%%
-from concurrent.futures import ProcessPoolExecutor
+from sklearn.neural_network import MLPClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.utils import shuffle
+from sklearn.metrics import accuracy_score
 import pandas as pd
-from random import randint
-from math import floor
+import numpy as np
 
-def one(test1, test2):
-    ll = []
-    for each in test1:
-        count = 0
-        for sub in test2:
-            if each==sub:
-                count += 1
-        ll.append(count)
-    temp = pd.DataFrame()
-    temp["1"] = test1
-    temp["2"] = ll
-    return temp
+# X = np.zeros((6, 5))
+# X[0] = [np.nan, 1, 2, 3, 4]
+# X[1] = [1, 2, 3, 4, np.nan]
+# X[2] = [np.nan, 5, 4, 3, 2]
+# X[3] = [np.nan, 5, 4, 4, 1]
+# X[4] = [4, np.nan, 4, 4, 1]
+# X[5] = [np.nan, 2, 3, 4, 5]
+# y = np.array([1, 1, 0, 0, 0, 1])
 
-def main():
-    test2 = [randint(1,100) for i in range(10000)]
-    n = 50
-    tasks = []
-    with ProcessPoolExecutor(max_workers=n) as pool:
-        for i in range(20000):
-            test1 = list(range(1, 100))
-            tasks.append(pool.submit(one, test1, test2))
-    for each in tasks:
-        print(each.result().iloc[1,:])
+m = MLPClassifier(verbose=True, activation="relu", hidden_layer_sizes=(20, 20, ))
+data = pd.read_csv("classified5.csv")
+data = data[~data["gender"].isin([-1])]
+data = data[~data["age"].isin([-1])]
+data = data[~data["marital_status"].isin([-1])]
+data = data[~data["education"].isin([-1])]
+data = data[~data["city_level"].isin([-1])]
+data = data[~data["purchase_power"].isin([-1])]
+print(len(data))
 
+data = shuffle(data)  # 打乱
+X = data.iloc[:, [2, 4, 5, 10]].to_numpy()  # consumption
+# discount,user_level,plus,gender,age,marital_status,education,city_level,purchase_power
+y = data.iloc[:, 1].to_numpy()
 
-def split_n(lists, n=2):
-    '''
-    split an list into n pieces
-    output: a list of split lists
-    '''
-    l = len(lists)
-    output = []
-    for i in range(n):
-        output.append(lists[floor(i/n*l):floor((i+1)/n*l)])
-    return output
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+m.fit(X_train, y_train)
+y_hat = m.predict(X_test)
+print(accuracy_score(y_train, m.predict(X_train)))
+print(accuracy_score(y_test, y_hat))
 
-orders = pd.read_csv("Data/JD_order_data.csv")
-orders.set_index(["user_ID"], inplace=True, drop=False)
-orders.index.set_names("hhh", inplace=True)
-
-#%%
-orders
-# %%
-a = orders.index.unique()
-a
-# %%
-b = a[1:10]
-
-# # %%
-# for each in b:
-#     print(orders.loc[each,["user_ID","order_ID"]])
 
 # %%
-print(orders.index)
-print(orders.head())

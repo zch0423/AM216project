@@ -15,18 +15,11 @@ import numpy as np
 # X[5] = [np.nan, 2, 3, 4, 5]
 # y = np.array([1, 1, 0, 0, 0, 1])
 
-m = MLPClassifier(verbose=True, activation="relu", hidden_layer_sizes=(20, 20, ))
-data = pd.read_csv("classified5.csv")
-data = data[~data["gender"].isin([-1])]
-data = data[~data["age"].isin([-1])]
-data = data[~data["marital_status"].isin([-1])]
-data = data[~data["education"].isin([-1])]
-data = data[~data["city_level"].isin([-1])]
-data = data[~data["purchase_power"].isin([-1])]
-print(len(data))
+m = MLPClassifier(verbose=True, activation="relu", hidden_layer_sizes=(10, ))
+data = pd.read_csv("classified5_clean.csv")
 
 data = shuffle(data)  # 打乱
-X = data.iloc[:, [2, 4, 5, 10]].to_numpy()  # consumption
+X = data.iloc[:, 2:].to_numpy()  # consumption
 # discount,user_level,plus,gender,age,marital_status,education,city_level,purchase_power
 y = data.iloc[:, 1].to_numpy()
 
@@ -35,6 +28,5 @@ m.fit(X_train, y_train)
 y_hat = m.predict(X_test)
 print(accuracy_score(y_train, m.predict(X_train)))
 print(accuracy_score(y_test, y_hat))
-
 
 # %%

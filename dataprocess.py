@@ -174,13 +174,24 @@ def process_data(n_cons=10, n_dis=5, path="userorder.csv"):
     data.to_csv("classified%d.csv"%n_cons, index=0)
     return data
 
-def labelNull(data):
-    # 将缺失值处理为null
-    pass
-    
+def deleteNull(infile="classified10.csv"):
+    data = pd.read_csv(infile)
+    data = data[~data["gender"].isin([-1])]
+    data = data[~data["age"].isin([-1])]
+    data = data[~data["marital_status"].isin([-1])]
+    data = data[~data["education"].isin([-1])]
+    data = data[~data["city_level"].isin([-1])]
+    data = data[~data["purchase_power"].isin([-1])]
+    outfile = infile[:-4]+"_clean.csv"
+    data.to_csv(outfile, index=False)
+
 #%%
 if __name__ == "__main__":
     # clicks, order, sku, user = read_tables()
-    print("Read")  # test
+    print("data process")
     # multiUserOrder(user, order, process_num=6, outfile="userorder.csv")
-    process_data(n_cons=5)  # 预处理
+    for n in [4, 5, 6, 7, 8, 9, 10]:
+        # 分类
+        print("分类:", n)
+        process_data(n_cons=n)  # 预处理
+        deleteNull(infile="classified%d.csv"%n)
